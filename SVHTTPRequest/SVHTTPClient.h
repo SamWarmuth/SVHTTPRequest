@@ -42,7 +42,7 @@ typedef void (^SVHTTPRequestCompletionHandler)(id response, NSHTTPURLResponse *u
 @property (nonatomic, strong) NSString *basePath;
 @property (nonatomic, strong) NSString *userAgent;
 
-@property (nonatomic, readwrite) BOOL sendParametersAsJSON;
+@property (nonatomic, readwrite) BOOL sendParametersAsJSON, requireJSONResponse;
 @property (nonatomic, readwrite) NSURLRequestCachePolicy cachePolicy;
 @property (nonatomic, readwrite) NSUInteger timeoutInterval;
 

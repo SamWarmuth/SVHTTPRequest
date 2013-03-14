@@ -150,6 +150,7 @@
                                                                                                      progress:progressBlock
                                                                                                    completion:completionBlock];
     requestOperation.sendParametersAsJSON = self.sendParametersAsJSON;
+    requestOperation.requireJSONResponse = self.requireJSONResponse;
     requestOperation.cachePolicy = self.cachePolicy;
     requestOperation.userAgent = self.userAgent;
     

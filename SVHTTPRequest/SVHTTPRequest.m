@@ -44,11 +44,12 @@ static NSString *defaultUserAgent;
 @property (nonatomic, strong) NSString *operationSavePath;
 @property (nonatomic, assign) CFRunLoopRef operationRunLoop;
 
+
 #if TARGET_OS_IPHONE
 @property (nonatomic, readwrite) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 #endif
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < 60000
+#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED < 60000) || (defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED < 1080)
 @property (nonatomic, assign) dispatch_queue_t saveDataDispatchQueue;
 @property (nonatomic, assign) dispatch_group_t saveDataDispatchGroup;
 #else
@@ -83,7 +84,7 @@ static NSString *defaultUserAgent;
 
 - (void)dealloc {
     [_operationConnection cancel];
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < 60000
+#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED < 60000) || (defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED < 1080)
     dispatch_release(_saveDataDispatchGroup);
     dispatch_release(_saveDataDispatchQueue);
 #endif
@@ -512,13 +513,11 @@ static NSString *defaultUserAgent;
         
         id response = [NSData dataWithData:self.operationData];
         NSError *error = nil;
-        
-        if ([[self.operationURLResponse MIMEType] isEqualToString:@"application/json"]) {
+        if ([[self.operationURLResponse MIMEType] isEqualToString:@"application/json"] || self.requireJSONResponse) {
             if(self.operationData && self.operationData.length > 0) {
                 NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
-                
-                if(jsonObject)
-                    response = jsonObject;
+                if (jsonObject) response = jsonObject;
+                else if (self.requireJSONResponse) response = nil;
             }
         }
         
